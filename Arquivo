@@ -1,0 +1,161 @@
+CREATE TABLE autor(
+  id INTEGER NOT NULL PRIMARY KEY,
+  nome VARCHAR(250),
+  altura FLOAT(5,2),
+  idade INT,
+  nacionalidade VARCHAR(250)
+  );
+  INSERT INTO autor VALUES(1, 'Tannebaum', 1.78, 56, 'Inglês');
+  INSERT INTO autor VALUES(2, 'Al-kaibir', 1.56, 23, 'Árabe');
+  INSERT INTO autor VALUES(3, 'Toroskovov', 1.9, 41, 'Russo');
+  INSERT INTO autor VALUES(4, 'Sun Tzu', 1.61, 18, 'Chinês');
+  INSERT INTO autor VALUES(5, 'Aitofel', 1.41, 34, 'Hebreu' );
+   SELECT *FROM autor;
+   CREATE TABLE autor_livro (
+    id_autor INT,
+    id_livro INT,
+    FOREIGN KEY (id_autor) REFERENCES autor(id),
+    FOREIGN KEY (id_livro) REFERENCES livro(id)
+);
+ CREATE TABLE editora(
+   id INTEGER NOT NULL PRIMARY KEY, 
+   nome VARCHAR(250),
+   renda FLOAT(5,2),
+   colaborador INT
+ );
+    INSERT INTO editora VALUES(1, 'Saber e Conhecer', 1500000, 30);
+  INSERT INTO editora VALUES(2, 'Sagah+', 356000, 12);
+  INSERT INTO editora VALUES(3, 'Aprender e cia', 11000000, 50);
+  INSERT INTO editora VALUES(4, 'Education Solution', 150000, 8);
+  INSERT INTO editora VALUES(5, 'Conhecimento e Luz', 500000, 17);
+  SELECT *FROM editora;
+  
+  CREATE TABLE livro(
+   id INTEGER NOT NULL PRIMARY KEY, 
+   titulo VARCHAR(250),
+   valor FLOAT(5,2),
+   id_autor INT,
+    id_editora INT,
+    FOREIGN KEY(id_autor) REFERENCES autor(id),
+    FOREIGN KEY(id_editora) REFERENCES editora(id)
+ );
+ INSERT INTO livro VALUES(1, 'Assim falava Zaratrusta', 30.50, 1, 2);
+ INSERT INTO livro VALUES(2, 'A arte da guerra', 20.7, 4, 3);
+ INSERT INTO livro VALUES(3, 'O último Teorema de Fermat', 50, 5, 1);
+ INSERT INTO livro VALUES(4, 'O segredo da maçonaria', 35.33, 2, 2);
+ INSERT INTO livro VALUES(5, 'Deus e os astronautas', 30.50, 3, 4);
+ SELECT *From livro;
+ SELECT titulo, valor FROM livro WHERE id > 2;
+ SELECT MAX(valor) AS MaiorValor FROM livro;
+ SELECT MIN(valor) AS MenorValor FROM livro;
+ SELECT AVG(valor) AS MediaValor FROM livro;
+ SELECT COUNT(valor) AS QuantidadeValor FROM livro;
+ SELECT DISTINCT(valor) AS ValorUnico FROM livro;
+ 
+ SELECT titulo FROM livro AS l, autor AS a
+ WHERE l.id_autor = a.id AND a.nome = 'Tannebaum';
+ 
+SELECT nome FRom livro As l, editora as a 
+WHERE l.id_editora = a.id and l.titulo = 'Assim falava Zaratrusta';
+
+SELECT * FROM autor WHERE idade > 30 AND altura > 1.8;
+SELECT * FROM autor WHERE NOT(idade > 23);
+SELECT ROUND(altura * idade, 2) FROM autor WHERE id > 2;
+SELECT altura + idade FROM autor;
+SELECT altura - idade FROM autor;
+SELECT ROUND(altura / idade, 2) FROM autor;
+SELECT (idade % 2) AS resto FROM autor WHERE id = 2;
+
+Nome e idade do Autor que fez um livro, que foi publicado na editora Conhecimento e Luz?
+SELECT a.nome, a.idade FROM autor AS a,livro as l, editora as e
+WHERE a.id = l.id_autor AND l.id_editora = e.id AND e.nome = 'Saber e Conhecer';
+Quantidade de livros publicados pelo Al-Kaibir?
+SELECT COUNT(*) AS QuantidadeLivros FROM livro
+JOIN autor ON livro.id_autor = autor.id
+WHERE autor.nome = 'Al-kaibir';
+
+Diga a idade x altura do autor que escreveu o livro a arte da guerra?
+SELECT a.idade * a.altura, nome AS 'Idade_x_Altura'
+FROM autor AS a
+JOIN livro AS l ON a.id = l.id_autor
+WHERE l.titulo = 'A arte da guerra';
+
+Apresente em Maiúsculo o nome da editora e nome do autor do livro, o último teorema de Fermat.
+SELECT UPPER(e.nome) AS NomeEditora, UPPER(a.nome) AS NomeAutor
+FROM livro AS l
+JOIN autor AS a ON l.id_autor = a.id
+JOIN editora AS e ON l.id_editora = e.id
+WHERE l.titulo = 'O último Teorema de Fermat';
+
+Qual é o ID do autor que escreveu o livro com o título "A arte da guerra"?
+ SELECT id_autor FROM livro WHERE titulo = 'A arte da guerra';
+Qual é o nome da editora do livro com o id igual a 5?
+SELECT nome FROM editora WHERE id = 5
+Quantos livros foram escritos pelo autor com o ID 2?
+SELECT COUNT(*) FROM livro WHERE id_autor = 2;
+
+Qual é o nome da editora do livro que tem id maior que 3?
+SELECT nome FROM editora WHERE id > 3
+Quantos livros foram publicados pela editora "Conhecimento e Luz"?
+SELECT COUNT(*) AS quantidade_de_livros FROM livro
+JOIN editora ON livro.id_editora = editora.id
+WHERE editora.nome = 'Conhecimento e Luz';
+
+Qual é o ID do autor que é mais velho?
+SELECT id FROM autor ORDER BY idade DESC LIMIT 1;
+
+Concatene o nome do autor e o título do livro para todos os livros publicados pela editora com o ID 3.
+SELECT CONCAT(a.nome, ': ', l.titulo) AS 'Autor e Título' FROM autor AS a
+JOIN livro AS l ON a.id = l.id_autor
+JOIN editora AS e ON l.id_editora = e.id
+WHERE e.id = 3;
+Converta o nome da editora "Education Solution" para maiúsculas.
+SELECT UPPER(nome) FROM editora WHERE id = 4;
+Converta o nome do autor "Toroskovov" para minúsculas.
+   SELECT LOWER(nome) FROM autor WHERE id = 3;
+   Selecione o preço máximo de todos os livros na tabela. 
+   SELECT MAX(valor) AS 'Preço Máximo' FROM livro;
+
+Liste todos os autores distintos da tabela. 
+SELECT DISTINCT nome FROM autor;
+Conte quantos livros estão na tabela. 
+SELECT COUNT(*) AS quantidade_de_livros FROM livro;
+
+Calcule a soma total dos preços dos livros. 
+SELECT SUM(valor) AS 'Soma Total dos Preços' FROM livro;
+
+Apresente a quantidade de autores, a média da idade dos autores, soma das alturas dos autores, isto tudo por nacionalidade.
+SELECT nacionalidade,COUNT(id) AS quantidade_de_autores,
+AVG(idade) AS media_idade, SUM(altura) AS soma_altura FROM autor
+GROUP BY nacionalidade;
+
+Apresente os nomes e idades dos três autores mais velhos.
+SELECT nome, idade FROM autor 
+ORDER BY idade DESC LIMIT 3;
+
+Ordene os livros por preço em ordem decrescente. 
+SELECT titulo, valor FROM livro ORDER BY valor DESC;
+
+ Selecione os livros cujo preço está entre $10 e $60. 
+SELECT * FROM livro WHERE valor BETWEEN 10 AND 60;
+Encontrar os autores onde a média das alturas é superior a 1.5;
+SELECT AVG(altura) AS media_altura, nacionalidade FROM autor
+GROUP BY nacionalidade
+HAVING AVG(altura) > 1.5;
+
+Encontrar os livros que foi publicado pela editora x, escrito pelo autor y, que seu autor tem idade superior 30, altura maior que 1.75;
+SELECT l.titulo FROM livro AS l
+JOIN autor AS a ON l.id_autor = a.id
+JOIN editora AS e ON l.id_editora = e.id
+WHERE e.nome = 'Sagah+' AND a.nome = 'Tannebaum' AND a.idade > 30 AND a.altura > 1.75;
+
+Encontrar os livros que tem mais de 3 autores;
+SELECT l.titulo, COUNT(a.id) AS quantidade_de_autores FROM livro l
+JOIN autor_livro al ON l.id = al.id_livro
+JOIN autor a ON al.id_autor = a.id
+GROUP BY l.id
+HAVING COUNT(a.id) > 3;
+
+Encontrar os livros com valor superior a 70 reais, ordenados pela média em ordem decrescente:
+SELECT titulo, valor FROM livro WHERE valor > 70
+ORDER BY valor DESC;
